@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any
 
 from homeassistant.components.sensor import SensorEntity, SensorDeviceClass, SensorStateClass
@@ -29,6 +30,30 @@ SENSOR_DESCRIPTIONS = (
         "name": "RSSI",
         "unit": SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
         "device_class": SensorDeviceClass.SIGNAL_STRENGTH,
+        "state_class": None,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+    },
+    {
+        "key": "connected",
+        "name": "Connected",
+        "unit": None,
+        "device_class": None,
+        "state_class": None,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+    },
+    {
+        "key": "last_action",
+        "name": "Last Action",
+        "unit": None,
+        "device_class": None,
+        "state_class": None,
+        "entity_category": None,
+    },
+    {
+        "key": "updated_at",
+        "name": "Updated",
+        "unit": None,
+        "device_class": SensorDeviceClass.TIMESTAMP,
         "state_class": None,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
@@ -95,7 +120,22 @@ class TTLockLocalSensor(TTLockLocalCoordinatorEntity, SensorEntity):
     @property
     def native_value(self):
         lock_data = self._lock_data or {}
-        return lock_data.get(self._description["key"])
+        key = self._description["key"]
+        value = lock_data.get(key)
+
+        if key == "connected":
+            return "Yes" if value else "No"
+
+        if key == "updated_at":
+            if not value:
+                return None
+            try:
+                normalized = str(value).replace("Z", "+00:00")
+                return datetime.fromisoformat(normalized)
+            except ValueError:
+                return None
+
+        return value
 
     @property
     def device_info(self):
