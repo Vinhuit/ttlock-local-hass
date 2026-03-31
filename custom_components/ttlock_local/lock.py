@@ -73,14 +73,22 @@ class TTLockLocalLock(TTLockLocalCoordinatorEntity, LockEntity):
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
         lock_data = self._lock_data or {}
+        lock_state_text = (
+            "Locked" if lock_data.get("is_locked") is True
+            else "Unlocked" if lock_data.get("is_locked") is False
+            else "Unknown"
+        )
         return {
             "address": self._address,
             "active": lock_data.get("active"),
             "saved": lock_data.get("saved"),
             "discovered": lock_data.get("discovered"),
             "connected": lock_data.get("connected"),
+            "lock_state": lock_state_text,
             "rssi": lock_data.get("rssi"),
             "battery": lock_data.get("battery"),
+            "last_action": lock_data.get("last_action"),
+            "updated_at": lock_data.get("updated_at"),
         }
 
     @property
