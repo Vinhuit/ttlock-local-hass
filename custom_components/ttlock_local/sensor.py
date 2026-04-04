@@ -5,7 +5,12 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from homeassistant.components.sensor import SensorEntity, SensorDeviceClass, SensorStateClass
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorEntity,
+    SensorEntityDescription,
+    SensorStateClass,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import PERCENTAGE
 from homeassistant.core import HomeAssistant
@@ -105,8 +110,15 @@ class TTLockLocalSensor(TTLockLocalCoordinatorEntity, SensorEntity):
     def __init__(self, coordinator, address: str, description: dict[str, Any]) -> None:
         super().__init__(coordinator)
         self._address = address
-        self.entity_description = None
         self._description = description
+        self.entity_description = SensorEntityDescription(
+            key=description["key"],
+            name=description["name"],
+            native_unit_of_measurement=description["unit"],
+            device_class=description["device_class"],
+            state_class=description["state_class"],
+            entity_category=description["entity_category"],
+        )
         self._attr_unique_id = f"{DOMAIN}_{address.lower()}_{description['key']}"
         self._attr_native_unit_of_measurement = description["unit"]
         self._attr_device_class = description["device_class"]
