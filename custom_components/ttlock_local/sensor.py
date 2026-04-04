@@ -7,13 +7,22 @@ from typing import Any
 
 from homeassistant.components.sensor import SensorEntity, SensorDeviceClass, SensorStateClass
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import PERCENTAGE, SIGNAL_STRENGTH_DECIBELS_MILLIWATT
+from homeassistant.const import PERCENTAGE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DATA_COORDINATOR, DOMAIN
 from .entity import TTLockLocalCoordinatorEntity
+
+try:
+    from homeassistant.const import UnitOfSignalStrength
+
+    RSSI_UNIT = UnitOfSignalStrength.DECIBELS_MILLIWATT
+except ImportError:
+    from homeassistant.const import SIGNAL_STRENGTH_DECIBELS_MILLIWATT
+
+    RSSI_UNIT = SIGNAL_STRENGTH_DECIBELS_MILLIWATT
 
 
 SENSOR_DESCRIPTIONS = (
@@ -28,7 +37,7 @@ SENSOR_DESCRIPTIONS = (
     {
         "key": "rssi",
         "name": "RSSI",
-        "unit": SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
+        "unit": RSSI_UNIT,
         "device_class": SensorDeviceClass.SIGNAL_STRENGTH,
         "state_class": None,
         "entity_category": EntityCategory.DIAGNOSTIC,
