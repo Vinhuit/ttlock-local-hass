@@ -7,8 +7,10 @@ from typing import Any
 from homeassistant.components.lock import LockEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
+from .api import TTLockLocalApiError
 from .const import DATA_API, DATA_COORDINATOR, DOMAIN
 from .entity import TTLockLocalCoordinatorEntity
 
@@ -96,9 +98,17 @@ class TTLockLocalLock(TTLockLocalCoordinatorEntity, LockEntity):
         return self.build_device_info(self._address, self.name)
 
     async def async_lock(self, **kwargs: Any) -> None:
-        await self._api.async_lock(self._address)
+        try:
+            await self._api.async_lock(self._address)
+        except TTLockLocalApiError as err:
+            await self.coordinator.async_request_refresh()
+            raise HomeAssistantError(str(err)) from err
         await self.coordinator.async_request_refresh()
 
     async def async_unlock(self, **kwargs: Any) -> None:
-        await self._api.async_unlock(self._address)
+        try:
+            await self._api.async_unlock(self._address)
+        except TTLockLocalApiError as err:
+            await self.coordinator.async_request_refresh()
+            raise HomeAssistantError(str(err)) from err
         await self.coordinator.async_request_refresh()
