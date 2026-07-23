@@ -14,6 +14,7 @@ from .api import TTLockLocalApiClient, TTLockLocalApiError
 from .const import (
     CONF_POLL_INTERVAL,
     CONF_WEBUI_NAME,
+    CONF_ANDROID_UNLOCK,
     DEFAULT_HOST,
     DEFAULT_NAME,
     DEFAULT_POLL_INTERVAL,
@@ -28,6 +29,7 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
         vol.Required(CONF_HOST, default=DEFAULT_HOST): str,
         vol.Required(CONF_PORT, default=DEFAULT_PORT): int,
         vol.Required(CONF_POLL_INTERVAL, default=DEFAULT_POLL_INTERVAL): vol.All(int, vol.Range(min=3, max=300)),
+        vol.Optional(CONF_ANDROID_UNLOCK, default=False): bool,
     }
 )
 
@@ -72,6 +74,7 @@ class TTLockLocalConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         CONF_HOST: user_input[CONF_HOST],
                         CONF_PORT: user_input[CONF_PORT],
                         CONF_POLL_INTERVAL: user_input[CONF_POLL_INTERVAL],
+                        CONF_ANDROID_UNLOCK: user_input.get(CONF_ANDROID_UNLOCK, False),
                         CONF_WEBUI_NAME: info["webui_name"],
                     },
                 )
@@ -138,6 +141,13 @@ class TTLockLocalOptionsFlow(config_entries.OptionsFlow):
                             self.config_entry.data.get(CONF_POLL_INTERVAL, DEFAULT_POLL_INTERVAL),
                         ),
                     ): vol.All(int, vol.Range(min=3, max=300)),
+                    vol.Optional(
+                        CONF_ANDROID_UNLOCK,
+                        default=self.config_entry.options.get(
+                            CONF_ANDROID_UNLOCK,
+                            self.config_entry.data.get(CONF_ANDROID_UNLOCK, False),
+                        ),
+                    ): bool,
                 }
             ),
             errors=errors,

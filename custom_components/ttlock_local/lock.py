@@ -11,7 +11,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .api import TTLockLocalApiError
-from .const import DATA_API, DATA_COORDINATOR, DOMAIN
+from .const import DATA_API, DATA_COORDINATOR, DOMAIN, CONF_ANDROID_UNLOCK
 from .entity import TTLockLocalCoordinatorEntity
 
 
@@ -33,7 +33,7 @@ async def async_setup_entry(
             if not address or address in known:
                 continue
             known.add(address)
-            new_entities.append(TTLockLocalLock(coordinator, api, address))
+            new_entities.append(TTLockLocalLock(coordinator, api, address, entry))
         if new_entities:
             async_add_entities(new_entities)
 
@@ -46,10 +46,11 @@ class TTLockLocalLock(TTLockLocalCoordinatorEntity, LockEntity):
 
     _attr_should_poll = False
 
-    def __init__(self, coordinator, api, address: str) -> None:
+    def __init__(self, coordinator, api, address: str, entry: ConfigEntry) -> None:
         super().__init__(coordinator)
         self._api = api
         self._address = address
+        self._entry = entry
         self._attr_unique_id = f"{DOMAIN}_{address.lower()}_lock"
 
     @property
@@ -98,16 +99,24 @@ class TTLockLocalLock(TTLockLocalCoordinatorEntity, LockEntity):
         return self.build_device_info(self._address, self.name)
 
     async def async_lock(self, **kwargs: Any) -> None:
+        android_unlock = self._entry.options.get(
+            CONF_ANDROID_UNLOCK,
+            self._entry.data.get(CONF_ANDROID_UNLOCK, False),
+        )
         try:
-            await self._api.async_lock(self._address)
+            await self._api.async_lock(self._address, android_unlock=android_unlock)
         except TTLockLocalApiError as err:
             await self.coordinator.async_request_refresh()
             raise HomeAssistantError(str(err)) from err
         await self.coordinator.async_request_refresh()
 
     async def async_unlock(self, **kwargs: Any) -> None:
+        android_unlock = self._entry.options.get(
+            CONF_ANDROID_UNLOCK,
+            self._entry.data.get(CONF_ANDROID_UNLOCK, False),
+        )
         try:
-            await self._api.async_unlock(self._address)
+            await self._api.async_unlock(self._address, android_unlock=android_unlock)
         except TTLockLocalApiError as err:
             await self.coordinator.async_request_refresh()
             raise HomeAssistantError(str(err)) from err

@@ -8,7 +8,8 @@
           "name": "Name",
           "host": "Host",
           "port": "Port",
-          "poll_interval": "Poll interval (seconds)"
+          "poll_interval": "Poll interval (seconds)",
+          "android_unlock": "Support Android Unlock also"
         }
       }
     },
@@ -24,7 +25,8 @@
         "data": {
           "host": "Host",
           "port": "Port",
-          "poll_interval": "Poll interval (seconds)"
+          "poll_interval": "Poll interval (seconds)",
+          "android_unlock": "Support Android Unlock also"
         }
       }
     }

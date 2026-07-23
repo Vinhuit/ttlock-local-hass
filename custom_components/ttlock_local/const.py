@@ -4,6 +4,7 @@ DOMAIN = "ttlock_local"
 
 CONF_POLL_INTERVAL = "poll_interval"
 CONF_WEBUI_NAME = "webui_name"
+CONF_ANDROID_UNLOCK = "android_unlock"
 
 DEFAULT_NAME = "TTLock Local"
 DEFAULT_HOST = "127.0.0.1"

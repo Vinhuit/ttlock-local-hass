@@ -28,13 +28,13 @@ class TTLockLocalApiClient:
     async def async_select_lock(self, address: str) -> dict[str, Any]:
         return await self._request("POST", "/api/select-lock", {"address": address})
 
-    async def async_unlock(self, address: str) -> dict[str, Any]:
+    async def async_unlock(self, address: str, android_unlock: bool = False) -> dict[str, Any]:
         await self.async_select_lock(address)
-        return await self._request("POST", "/api/unlock")
+        return await self._request("POST", "/api/unlock", {"android_unlock": android_unlock})
 
-    async def async_lock(self, address: str) -> dict[str, Any]:
+    async def async_lock(self, address: str, android_unlock: bool = False) -> dict[str, Any]:
         await self.async_select_lock(address)
-        return await self._request("POST", "/api/lock")
+        return await self._request("POST", "/api/lock", {"android_unlock": android_unlock})
 
     async def async_refresh(self) -> dict[str, Any]:
         return await self._request("POST", "/api/refresh")
