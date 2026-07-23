@@ -29,7 +29,7 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
         vol.Required(CONF_HOST, default=DEFAULT_HOST): str,
         vol.Required(CONF_PORT, default=DEFAULT_PORT): int,
         vol.Required(CONF_POLL_INTERVAL, default=DEFAULT_POLL_INTERVAL): vol.All(int, vol.Range(min=3, max=300)),
-        vol.Optional(CONF_ANDROID_UNLOCK, default=False): bool,
+        vol.Optional(CONF_ANDROID_UNLOCK, default=True): bool,
     }
 )
 
@@ -145,7 +145,7 @@ class TTLockLocalOptionsFlow(config_entries.OptionsFlow):
                         CONF_ANDROID_UNLOCK,
                         default=self.config_entry.options.get(
                             CONF_ANDROID_UNLOCK,
-                            self.config_entry.data.get(CONF_ANDROID_UNLOCK, False),
+                            self.config_entry.data.get(CONF_ANDROID_UNLOCK, True),
                         ),
                     ): bool,
                 }

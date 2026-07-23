@@ -101,7 +101,7 @@ class TTLockLocalLock(TTLockLocalCoordinatorEntity, LockEntity):
     async def async_lock(self, **kwargs: Any) -> None:
         android_unlock = self._entry.options.get(
             CONF_ANDROID_UNLOCK,
-            self._entry.data.get(CONF_ANDROID_UNLOCK, False),
+            self._entry.data.get(CONF_ANDROID_UNLOCK, True),
         )
         try:
             await self._api.async_lock(self._address, android_unlock=android_unlock)
@@ -113,7 +113,7 @@ class TTLockLocalLock(TTLockLocalCoordinatorEntity, LockEntity):
     async def async_unlock(self, **kwargs: Any) -> None:
         android_unlock = self._entry.options.get(
             CONF_ANDROID_UNLOCK,
-            self._entry.data.get(CONF_ANDROID_UNLOCK, False),
+            self._entry.data.get(CONF_ANDROID_UNLOCK, True),
         )
         try:
             await self._api.async_unlock(self._address, android_unlock=android_unlock)
